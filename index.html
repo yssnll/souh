@@ -15,30 +15,17 @@
   SUPABASE CONFIG — Remplacez les valeurs ci-dessous
   ══════════════════════════════════════════════════════════════════
 
-  ─── 1) Table des utilisateurs (mots de passe hashés SHA-256) ───
+  ─── 1) Table des utilisateurs (mots de passe en clair, visibles dans Supabase) ───
   CREATE TABLE app_users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
+    password TEXT NOT NULL,
     emoji TEXT DEFAULT '',
     created_at TIMESTAMPTZ DEFAULT NOW()
   );
 
   ALTER TABLE app_users ENABLE ROW LEVEL SECURITY;
   CREATE POLICY "users_allow_all" ON app_users FOR ALL USING (true) WITH CHECK (true);
-
-  -- Insérer les 2 utilisateurs par défaut (mots de passe hashés SHA-256)
-  -- Souhaib → mot de passe: "Souhaib"
-  INSERT INTO app_users (username, password_hash, emoji)
-  VALUES ('Souhaib', 'a3c2e8c2a3e3c8e8b3c2e8b3c8e8a3c8e2a3c8e2b3c8a3c8e2b3c8e2b3c8a3c8', 'S')
-  ON CONFLICT DO NOTHING;
-  -- Basma → mot de passe: "basma"
-  INSERT INTO app_users (username, password_hash, emoji)
-  VALUES ('Basma', 'a3b2c8e2a3c8b3c8e2b3c8a3c8e2b3c8e2a3c8b3c8e2b3c8e2b3c8e2b3c8a3c8', 'B')
-  ON CONFLICT DO NOTHING;
-  -- ⚠ Les hashs ci-dessus sont des placeholders.
-  -- Les vrais hashs SHA-256 seront calculés au premier login et mis à jour automatiquement.
-  -- Laissez le code JS insérer les vrais hash au moment du premier login.
 
   ─── 2) Table des messages ───
   CREATE TABLE messages (
@@ -933,7 +920,6 @@
       .user-card-emoji { font-size: 50px; }
       .user-card-name  { font-size: 16px; }
       .login-card     { max-width: 340px; }
-      #chat-screen    { max-width: 700px; margin: 0 auto; }
       .msg-content    { max-width: 65%; }
       #messages-area  { padding: 20px 20px 10px; }
       .bubble         { font-size: 15px; padding: 12px 16px; border-radius: 24px; }
@@ -948,10 +934,10 @@
 
     /* ── PC / Desktop (≥ 901px) ── */
     @media (min-width: 901px) {
-      #chat-screen    { max-width: 880px; margin: 0 auto; box-shadow: 0 0 60px rgba(0,0,0,0.06); }
+      #chat-screen    { width: 100%; }
       .msg-content    { max-width: 55%; }
       .msg-row        { max-width: 80%; }
-      #messages-area  { padding: 24px 32px 12px; }
+      #messages-area  { padding: 24px 4% 12px; }
       .bubble         { font-size: 15px; padding: 12px 18px; border-radius: 26px; }
       .mine .bubble   { border-radius: 26px 26px 6px 26px; }
       .theirs .bubble { border-radius: 26px 26px 26px 6px; }
@@ -969,9 +955,9 @@
 
     /* ── Très grand écran (≥ 1280px) ── */
     @media (min-width: 1280px) {
-      #chat-screen    { max-width: 1000px; }
+      #chat-screen    { width: 100%; }
       .msg-content    { max-width: 50%; }
-      #messages-area  { padding: 28px 48px 14px; }
+      #messages-area  { padding: 28px 6% 14px; }
       .voice-bubble   { max-width: 380px; }
       .img-bubble     { max-width: 420px; }
     }
@@ -1155,30 +1141,21 @@
 const SUPABASE_URL = 'https://unqozctaptpqzgmdepxc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucW96Y3RhcHRwcXpnbWRlcHhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MzE1NjIsImV4cCI6MjA5NzAwNzU2Mn0.4Du0uVsH5YLyCzWlBgfNXkIAJskotiNDNn4v6WyPHUI';
 
-// ── Hash SHA-256 du mot de passe (ne stocke jamais en clair en base) ──
-async function hashPassword(pwd) {
-  const encoder = new TextEncoder();
-  const data    = encoder.encode(pwd);
-  const hashBuf = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-// ── Cache utilisateurs (peuplé depuis Supabase) ──
+// ── Cache utilisateurs (peuplé depuis Supabase, mots de passe en clair) ──
 let USERS = {};
 async function loadUsers() {
   const { data, error } = await sb.from('app_users').select('*');
   if (error) { console.error('loadUsers:', error); return; }
   (data || []).forEach(u => {
-    USERS[u.username] = { hash: u.password_hash, emoji: u.emoji || '?' };
+    USERS[u.username] = { pass: u.password, emoji: u.emoji || '?' };
   });
 }
 
 // ── Auto-insérer les utilisateurs s'ils n'existent pas encore ──
 async function ensureUsersExist(defaults) {
   for (const { username, password, emoji } of defaults) {
-    const hash = await hashPassword(password);
     await sb.from('app_users').upsert(
-      { username, password_hash: hash, emoji },
+      { username, password, emoji },
       { onConflict: 'username' }
     );
   }
@@ -1293,8 +1270,7 @@ async function handleLogin() {
     return;
   }
 
-  const pwd      = document.getElementById('login-pwd').value.trim();
-  const inputHash = await hashPassword(pwd);
+  const pwd = document.getElementById('login-pwd').value.trim();
 
   // Récupérer l'utilisateur depuis Supabase
   const { data: user, error } = await sb
@@ -1309,9 +1285,9 @@ async function handleLogin() {
   }
 
   if (!user) {
-    // Premier accès : créer l'utilisateur avec ce mot de passe
+    // Premier accès : créer l'utilisateur avec ce mot de passe en clair
     const { error: insErr } = await sb.from('app_users').insert([
-      { username: selectedLoginUser, password_hash: inputHash, emoji: USERS[selectedLoginUser]?.emoji || '?' }
+      { username: selectedLoginUser, password: pwd, emoji: USERS[selectedLoginUser]?.emoji || '?' }
     ]);
     if (insErr) {
       document.getElementById('login-error').textContent = 'Erreur création compte';
@@ -1324,8 +1300,8 @@ async function handleLogin() {
     return;
   }
 
-  // Vérifier le mot de passe contre le hash stocké
-  if (inputHash !== user.password_hash) {
+  // Vérifier le mot de passe (comparaison directe avec Supabase)
+  if (pwd !== user.password) {
     document.getElementById('login-error').textContent = 'Mot de passe incorrect';
     document.getElementById('login-pwd').value = '';
     return;
@@ -2006,30 +1982,28 @@ async function doChangePwd() {
   if (!nw)                      { errEl.textContent = 'Le nouveau mot de passe est vide'; return; }
   if (nw !== confirm)           { errEl.textContent = 'Les mots de passe ne correspondent pas'; return; }
 
-  // Vérifier le mot de passe actuel contre Supabase
-  const curHash = await hashPassword(cur);
+  // Vérifier le mot de passe actuel contre Supabase (en clair)
   const { data: user } = await sb
     .from('app_users')
-    .select('password_hash')
+    .select('password')
     .eq('username', currentUser)
     .maybeSingle();
 
-  if (!user || curHash !== user.password_hash) {
+  if (!user || cur !== user.password) {
     errEl.textContent = 'Mot de passe actuel incorrect';
     return;
   }
 
-  // Mettre à jour dans Supabase avec le nouveau hash
-  const newHash = await hashPassword(nw);
+  // Mettre à jour dans Supabase avec le nouveau mot de passe en clair
   const { error } = await sb
     .from('app_users')
-    .update({ password_hash: newHash })
+    .update({ password: nw })
     .eq('username', currentUser);
 
   if (error) { errEl.textContent = 'Erreur mise à jour : ' + error.message; return; }
 
   // Mettre à jour le cache local
-  USERS[currentUser].hash = newHash;
+  USERS[currentUser].pass = nw;
   closePwd();
   showToast('Mot de passe modifié ✓');
 }
