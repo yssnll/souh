@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>💬 Chat — Souhaib & Basma | Liquid Glass</title>
+  <title>💬 Chat | Liquid Glass</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -865,6 +865,122 @@
     @keyframes orbA { from{transform:translate(0,0) scale(1)} to{transform:translate(60px,80px) scale(1.2)} }
     @keyframes orbB { from{transform:translate(0,0) scale(1)} to{transform:translate(-50px,-60px) scale(1.15)} }
     @keyframes orbC { from{transform:translate(0,0) scale(1) rotate(0deg)} to{transform:translate(30px,-40px) scale(1.1) rotate(20deg)} }
+
+    /* ═══════════════════════════════════════════════ */
+    /* RESPONSIVE DESIGN — détecte auto l'appareil     */
+    /* ═══════════════════════════════════════════════ */
+
+    /* ── iPhone SE / petits écrans (largeur ≤ 390px) ── */
+    @media (max-width: 390px) {
+      .ghost-logo        { font-size: 56px; }
+      .login-sub         { font-size: 12px; }
+      .user-cards        { gap: 8px; }
+      .user-card         { width: 110px; padding: 14px 8px; border-radius: 20px; }
+      .user-card-emoji   { font-size: 32px; }
+      .user-card-name    { font-size: 13px; }
+      #header            { padding: 8px 10px; gap: 8px; }
+      .h-avatar          { width: 38px; height: 38px; font-size: 18px; }
+      .h-name            { font-size: 15px; }
+      .h-btn             { width: 34px; height: 34px; font-size: 14px; }
+      #messages-area     { padding: 10px 6px 6px; gap: 1px; }
+      .msg-avatar-sm     { width: 24px; height: 24px; font-size: 11px; }
+      .msg-content       { max-width: 80%; }
+      .msg-row           { gap: 5px; }
+      .bubble            { font-size: 13.5px; padding: 8px 12px; border-radius: 18px; line-height: 1.4; }
+      .mine .bubble      { border-radius: 18px 18px 4px 18px; }
+      .theirs .bubble    { border-radius: 18px 18px 18px 4px; }
+      .voice-bubble      { min-width: 140px; max-width: 180px; }
+      .voice-play-btn    { width: 34px; height: 34px; font-size: 12px; }
+      .img-bubble        { max-width: 180px; border-radius: 14px; }
+      .file-bubble       { max-width: 200px; }
+      .file-name         { max-width: 120px; font-size: 12px; }
+      #input-bar         { padding: 6px 8px; gap: 5px; }
+      .ib-btn            { width: 38px; height: 38px; font-size: 17px; }
+      #voice-btn         { width: 38px; height: 38px; font-size: 18px; }
+      #send-btn          { width: 36px; height: 36px; font-size: 15px; }
+      #msg-input         { font-size: 16px; padding: 9px 0; } /* 16px obligatoire sur iOS pour éviter le zoom auto */
+      #input-wrap        { border-radius: 20px; padding: 0 10px; }
+      .reply-bar-name    { font-size: 11px; }
+      .reply-bar-preview { font-size: 11px; }
+      #rec-timer         { font-size: 12px; }
+      .rec-hint          { font-size: 10px; }
+      #ctx-menu          { min-width: 155px; padding: 5px; border-radius: 18px; }
+      .ctx-emoji-btn     { width: 32px; height: 32px; font-size: 18px; }
+      .ctx-item          { padding: 9px 12px; font-size: 13px; border-radius: 12px; }
+      #iv-img            { max-width: 98%; border-radius: 12px; }
+      #img-viewer-close  { width: 40px; height: 40px; font-size: 22px; }
+    }
+
+    /* ── iPhone standard / petits Android (391–500px) ── */
+    @media (min-width: 391px) and (max-width: 500px) {
+      .ghost-logo     { font-size: 68px; }
+      .user-card      { width: 125px; }
+      .msg-avatar-sm  { width: 28px; height: 28px; font-size: 13px; }
+      .msg-content    { max-width: 76%; }
+      .bubble         { font-size: 14.5px; }
+      .voice-bubble   { max-width: 220px; }
+      .img-bubble     { max-width: 210px; }
+      .ib-btn         { width: 42px; height: 42px; }
+      #voice-btn      { width: 42px; height: 42px; }
+      #send-btn       { width: 40px; height: 40px; }
+    }
+
+    /* ── Tablettes (501–900px) ── */
+    @media (min-width: 501px) and (max-width: 900px) {
+      .ghost-logo     { font-size: 88px; }
+      .login-sub      { font-size: 16px; margin-bottom: 40px; }
+      .user-card      { width: 150px; padding: 24px 16px; }
+      .user-card-emoji { font-size: 50px; }
+      .user-card-name  { font-size: 16px; }
+      .login-card     { max-width: 340px; }
+      #chat-screen    { max-width: 700px; margin: 0 auto; }
+      .msg-content    { max-width: 65%; }
+      #messages-area  { padding: 20px 20px 10px; }
+      .bubble         { font-size: 15px; padding: 12px 16px; border-radius: 24px; }
+      .voice-bubble   { max-width: 300px; }
+      .img-bubble     { max-width: 300px; }
+      #input-bar      { padding: 12px 16px; }
+      #header         { padding: 10px 20px; }
+      .h-avatar       { width: 50px; height: 50px; font-size: 22px; }
+      .h-name         { font-size: 18px; }
+      .h-status       { font-size: 13px; }
+    }
+
+    /* ── PC / Desktop (≥ 901px) ── */
+    @media (min-width: 901px) {
+      #chat-screen    { max-width: 880px; margin: 0 auto; box-shadow: 0 0 60px rgba(0,0,0,0.06); }
+      .msg-content    { max-width: 55%; }
+      .msg-row        { max-width: 80%; }
+      #messages-area  { padding: 24px 32px 12px; }
+      .bubble         { font-size: 15px; padding: 12px 18px; border-radius: 26px; }
+      .mine .bubble   { border-radius: 26px 26px 6px 26px; }
+      .theirs .bubble { border-radius: 26px 26px 26px 6px; }
+      .voice-bubble   { max-width: 340px; }
+      .img-bubble     { max-width: 360px; }
+      #input-bar      { padding: 12px 22px; gap: 10px; }
+      #header         { padding: 12px 24px; }
+      .h-avatar       { width: 52px; height: 52px; font-size: 24px; }
+      .h-name         { font-size: 19px; }
+      .ib-btn         { width: 48px; height: 48px; }
+      #voice-btn      { width: 48px; height: 48px; }
+      #send-btn       { width: 46px; height: 46px; font-size: 20px; }
+      #msg-input      { font-size: 16px; padding: 12px 0; }
+    }
+
+    /* ── Très grand écran (≥ 1280px) ── */
+    @media (min-width: 1280px) {
+      #chat-screen    { max-width: 1000px; }
+      .msg-content    { max-width: 50%; }
+      #messages-area  { padding: 28px 48px 14px; }
+      .voice-bubble   { max-width: 380px; }
+      .img-bubble     { max-width: 420px; }
+    }
+
+    /* ── Safe area iOS (notch + home bar) — auto-détecté ── */
+    @supports (padding-top: env(safe-area-inset-top)) {
+      #header  { padding-top:    max(10px, env(safe-area-inset-top)); }
+      #input-bar { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+    }
   </style>
 </head>
 <body>
@@ -879,8 +995,7 @@
 <!-- ══ LOGIN ══ -->
 <div id="login-screen">
   <div class="ghost-logo">💬</div>
-  <h1 class="login-title">Chat Glass</h1>
-  <p class="login-sub">Entre Souhaib & Basma</p>
+  <p class="login-sub">Chat</p>
 
   <div class="user-cards">
     <div class="user-card" id="card-souhaib" onclick="selectUser('Souhaib')">
