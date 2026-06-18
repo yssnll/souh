@@ -3,8 +3,17 @@
 <html lang="fr" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport"
+    content="width=device-width,
+             initial-scale=1.0,
+             maximum-scale=1.0,
+             user-scalable=no,
+             viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Chat">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#a1c4fd">
   <title>💬 Chat | Liquid Glass</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
@@ -76,6 +85,18 @@
 
     /* ===== RESET & BASE ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      -webkit-touch-callout: none;
+    }
+    /* iPhone 16: 390×844 CSS. iPhone 16 Pro: 393×852 CSS */
+    html, body {
+      overscroll-behavior: none;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
 
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, 'SF Pro Display', sans-serif;
@@ -297,11 +318,14 @@
       position: relative; z-index: 1;
     }
 
-    /* HEADER */
+    /* HEADER — iPhone 16: safe-area-inset-top pour Dynamic Island (~59px) */
     #header {
       display: flex; align-items: center; gap: 12px;
       padding: 10px 16px;
-      padding-top: max(10px, env(safe-area-inset-top));
+      padding-top:   env(safe-area-inset-top, 10px);
+      padding-left:  env(safe-area-inset-left, 16px);
+      padding-right: env(safe-area-inset-right, 16px);
+      min-height: 64px;
       background: rgba(255, 255, 255, 0.45);
       backdrop-filter: blur(28px) saturate(200%);
       -webkit-backdrop-filter: blur(28px) saturate(200%);
@@ -580,11 +604,13 @@
     #rec-timer { font-size: 14px; font-weight: 800; color: #ef4444; font-variant-numeric: tabular-nums; }
     .rec-hint { font-size: 11px; color: #f87171; font-weight: 600; }
 
-    /* ===== INPUT BAR ===== */
+    /* INPUT BAR — iPhone 16: safe-area-inset-bottom pour home indicator (~34px) */
     #input-bar {
       flex-shrink: 0; display: flex; align-items: center; gap: 8px;
       padding: 10px 12px;
-      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      padding-bottom: env(safe-area-inset-bottom, 10px);
+      padding-left:   env(safe-area-inset-left, 12px);
+      padding-right:  env(safe-area-inset-right, 12px);
       background: rgba(255, 255, 255, 0.35);
       backdrop-filter: blur(24px) saturate(180%);
       -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -854,62 +880,121 @@
     @keyframes orbC { from{transform:translate(0,0) scale(1) rotate(0deg)} to{transform:translate(30px,-40px) scale(1.1) rotate(20deg)} }
 
     /* ═══════════════════════════════════════════════ */
-    /* RESPONSIVE DESIGN — détecte auto l'appareil     */
+    /* RESPONSIVE — iPhone 16, Android, Tablet, PC     */
     /* ═══════════════════════════════════════════════ */
+    /*  iPhone 16:       390×844 CSS @ 3x              */
+    /*  iPhone 16 Pro:   393×852 CSS @ 3x              */
+    /*  iPhone 16 Pro Max: 430×932 CSS @ 3x            */
+    /*  Dynamic Island safe-area-top: ~59px            */
+    /*  Home indicator safe-area-bottom: ~34px          */
 
-    /* ── iPhone SE / petits écrans (largeur ≤ 390px) ── */
-    @media (max-width: 390px) {
-      .ghost-logo        { font-size: 56px; }
-      .login-sub         { font-size: 12px; }
-      .user-cards        { gap: 8px; }
-      .user-card         { width: 110px; padding: 14px 8px; border-radius: 20px; }
-      .user-card-emoji   { font-size: 32px; }
-      .user-card-name    { font-size: 13px; }
-      #header            { padding: 8px 10px; gap: 8px; }
-      .h-avatar          { width: 38px; height: 38px; font-size: 18px; }
-      .h-name            { font-size: 15px; }
-      .h-btn             { width: 34px; height: 34px; font-size: 14px; }
-      #messages-area     { padding: 10px 6px 6px; gap: 1px; }
-      .msg-avatar-sm     { width: 24px; height: 24px; font-size: 11px; }
-      .msg-content       { max-width: 80%; }
-      .msg-row           { gap: 5px; }
-      .bubble            { font-size: 13.5px; padding: 8px 12px; border-radius: 18px; line-height: 1.4; }
+    /* ── iPhone 16 + iPhone 15 + iPhone 14 (≤393px) ── */
+    @media (max-width: 393px) {
+      .ghost-logo        { font-size: 52px; margin-bottom: 8px; }
+      .login-sub         { font-size: 12px; margin-bottom: 24px; }
+      .user-cards        { gap: 10px; }
+      .user-card         { width: 134px; padding: 18px 12px; border-radius: 20px; }
+      .user-card-emoji   { font-size: 36px; }
+      .user-card-name    { font-size: 14px; }
+      #login-screen      { padding: 24px; }
+      .login-input       { font-size: 16px !important; padding: 14px 16px; border-radius: 16px; }
+      .login-btn         { font-size: 16px; padding: 16px; border-radius: 16px; }
+      #header            { min-height: 64px;
+                           padding-top: env(safe-area-inset-top, 12px);
+                           padding-left: env(safe-area-inset-left, 16px);
+                           padding-right: env(safe-area-inset-right, 16px);
+                           gap: 10px; }
+      .h-avatar          { width: 40px; height: 40px; font-size: 18px; }
+      .h-name            { font-size: 15px; font-weight: 800; }
+      .h-status          { font-size: 11px; }
+      .h-btn             { width: 44px; height: 44px; min-width: 44px; min-height: 44px; font-size: 16px; }
+      #messages-area     { padding: 12px 10px 8px; gap: 2px; -webkit-overflow-scrolling: touch; }
+      .msg-avatar-sm     { width: 28px; height: 28px; font-size: 13px; margin-bottom: 4px; }
+      .msg-content       { max-width: 82%; }
+      .msg-row           { gap: 6px; }
+      .bubble            { font-size: 14.5px; padding: 9px 13px;
+                           border-radius: 18px; line-height: 1.45; }
       .mine .bubble      { border-radius: 18px 18px 4px 18px; }
       .theirs .bubble    { border-radius: 18px 18px 18px 4px; }
-      .voice-bubble      { min-width: 140px; max-width: 180px; }
-      .voice-play-btn    { width: 34px; height: 34px; font-size: 12px; }
-      .img-bubble        { max-width: 180px; border-radius: 14px; }
-      .file-bubble       { max-width: 200px; }
-      .file-name         { max-width: 120px; font-size: 12px; }
-      #input-bar         { padding: 6px 8px; gap: 5px; }
-      .ib-btn            { width: 38px; height: 38px; font-size: 17px; }
-      #voice-btn         { width: 38px; height: 38px; font-size: 18px; }
-      #send-btn          { width: 36px; height: 36px; font-size: 15px; }
-      #msg-input         { font-size: 16px; padding: 9px 0; } /* 16px obligatoire sur iOS pour éviter le zoom auto */
-      #input-wrap        { border-radius: 20px; padding: 0 10px; }
-      .reply-bar-name    { font-size: 11px; }
-      .reply-bar-preview { font-size: 11px; }
-      #rec-timer         { font-size: 12px; }
-      .rec-hint          { font-size: 10px; }
-      #ctx-menu          { min-width: 155px; padding: 5px; border-radius: 18px; }
-      .ctx-emoji-btn     { width: 32px; height: 32px; font-size: 18px; }
-      .ctx-item          { padding: 9px 12px; font-size: 13px; border-radius: 12px; }
-      #iv-img            { max-width: 98%; border-radius: 12px; }
-      #img-viewer-close  { width: 40px; height: 40px; font-size: 22px; }
+      .voice-bubble      { min-width: 160px; max-width: min(220px, 58vw); padding: 9px 12px; }
+      .voice-play-btn    { width: 44px; height: 44px; min-width: 44px; min-height: 44px; font-size: 14px; }
+      .voice-waveform    { height: 24px; }
+      .wbar              { width: 3px; }
+      .voice-time        { font-size: 11px; }
+      .img-bubble        { max-width: min(240px, 62vw); border-radius: 16px; }
+      .file-bubble       { max-width: min(240px, 65vw); padding: 9px 12px; }
+      .file-name         { max-width: 150px; font-size: 12px; }
+      .file-icon         { font-size: 24px; }
+      #input-bar         { padding: 10px 12px;
+                           padding-bottom: env(safe-area-inset-bottom, 12px);
+                           padding-left: env(safe-area-inset-left, 12px);
+                           padding-right: env(safe-area-inset-right, 12px);
+                           gap: 6px; }
+      .ib-btn            { width: 44px; height: 44px; min-width: 44px; min-height: 44px; font-size: 18px; }
+      #voice-btn         { width: 44px; height: 44px; min-width: 44px; min-height: 44px; font-size: 20px; }
+      #send-btn          { width: 44px; height: 44px; min-width: 44px; min-height: 44px; font-size: 16px; }
+      #msg-input         { font-size: 16px !important; padding: 10px 0; line-height: 1.4; }
+      #input-wrap        { border-radius: 22px; padding: 0 12px; min-height: 44px; }
+      #reply-bar         { padding: 8px 14px;
+                           padding-left: env(safe-area-inset-left, 14px);
+                           padding-right: env(safe-area-inset-right, 14px); }
+      .reply-bar-name    { font-size: 12px; }
+      .reply-bar-preview { font-size: 12px; }
+      .reply-bar-cancel  { font-size: 24px; padding: 4px; min-width: 44px; min-height: 44px;
+                           display: flex; align-items: center; justify-content: center; }
+      #rec-bar           { padding: 10px 14px; }
+      #rec-timer         { font-size: 13px; font-variant-numeric: tabular-nums; }
+      .rec-hint          { font-size: 11px; }
+      #typing-indicator  { padding: 4px 16px; min-height: 28px; }
+      .tdot              { width: 6px; height: 6px; }
+      .typing-name       { font-size: 12px; }
+      #ctx-menu          { min-width: 210px; padding: 6px; border-radius: 20px; max-width: 85vw; }
+      .ctx-emojis        { padding: 8px 6px 10px; gap: 3px; }
+      .ctx-emoji-btn     { width: 42px; height: 42px; min-width: 44px; min-height: 44px; font-size: 22px; }
+      .ctx-item          { padding: 12px 14px; font-size: 14px; border-radius: 14px; min-height: 48px; }
+      #iv-img            { max-width: 96%; max-height: 80vh; border-radius: 14px; }
+      #img-viewer-close  { width: 48px; height: 48px; min-width: 48px; min-height: 48px; font-size: 24px;
+                           top: max(16px, env(safe-area-inset-top)); right: 16px; }
+      #scroll-btn        { right: 14px; bottom: 14px; width: 44px; height: 44px; font-size: 18px;
+                           min-width: 44px; min-height: 44px; }
+      .date-sep          { font-size: 10px; padding: 12px 0 4px; }
+      /* Modals → bottom sheet style on iOS */
+      .modal-overlay     { padding: 0; align-items: flex-end; }
+      .modal-overlay.active .glass-card {
+        border-radius: 24px 24px 0 0;
+        max-width: 100%; width: 100%;
+        padding: 24px 20px;
+        padding-bottom: max(24px, env(safe-area-inset-bottom));
+        animation: modalSlideUp 0.35s var(--spring) both;
+      }
+      #toast-container   { bottom: auto; top: max(72px, env(safe-area-inset-top, 10px)); }
     }
 
-    /* ── iPhone standard / petits Android (391–500px) ── */
-    @media (min-width: 391px) and (max-width: 500px) {
+    /* ── iPhone 16 Pro Max / Grands iPhone (394–430px) ── */
+    @media (min-width: 394px) and (max-width: 430px) {
+      .ghost-logo     { font-size: 60px; }
+      .user-card      { width: 150px; }
+      .user-card-emoji { font-size: 38px; }
+      .msg-avatar-sm  { width: 30px; height: 30px; font-size: 14px; }
+      .msg-content    { max-width: 78%; }
+      .bubble         { font-size: 14.5px; padding: 10px 14px; }
+      .voice-bubble   { max-width: 240px; }
+      .img-bubble     { max-width: min(260px, 62vw); }
+      .h-btn          { min-width: 44px; min-height: 44px; }
+      .ib-btn         { min-width: 44px; min-height: 44px; }
+      #voice-btn      { min-width: 44px; min-height: 44px; }
+      #send-btn       { min-width: 44px; min-height: 44px; }
+    }
+
+    /* ── iPhone standard / petits Android (431–500px) ── */
+    @media (min-width: 431px) and (max-width: 500px) {
       .ghost-logo     { font-size: 68px; }
-      .user-card      { width: 125px; }
-      .msg-avatar-sm  { width: 28px; height: 28px; font-size: 13px; }
-      .msg-content    { max-width: 76%; }
-      .bubble         { font-size: 14.5px; }
-      .voice-bubble   { max-width: 220px; }
-      .img-bubble     { max-width: 210px; }
-      .ib-btn         { width: 42px; height: 42px; }
-      #voice-btn      { width: 42px; height: 42px; }
-      #send-btn       { width: 40px; height: 40px; }
+      .user-card      { width: 155px; }
+      .msg-avatar-sm  { width: 32px; height: 32px; font-size: 14px; }
+      .msg-content    { max-width: 74%; }
+      .bubble         { font-size: 15px; }
+      .voice-bubble   { max-width: 260px; }
+      .img-bubble     { max-width: min(270px, 65vw); }
     }
 
     /* ── Tablettes (501–900px) ── */
@@ -962,11 +1047,37 @@
       .img-bubble     { max-width: 420px; }
     }
 
-    /* ── Safe area iOS (notch + home bar) — auto-détecté ── */
-    @supports (padding-top: env(safe-area-inset-top)) {
-      #header  { padding-top:    max(10px, env(safe-area-inset-top)); }
-      #input-bar { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+    /* iOS modal bottom-sheet animation */
+    @keyframes modalSlideUp {
+      from { transform: translateY(60%); opacity: 0.5; }
+      to   { transform: translateY(0);   opacity: 1;   }
     }
+
+    /* Landscape: optimise header height */
+    @media (max-width: 844px) and (orientation: landscape) {
+      #header { min-height: 44px !important; padding-top: 4px !important; padding-bottom: 4px !important; }
+      .h-avatar { width: 36px; height: 36px; }
+      .h-name { font-size: 14px; }
+      #messages-area { padding: 6px 8px 4px; }
+      .modal-overlay.active .glass-card {
+        max-height: 80vh; overflow-y: auto;
+      }
+    }
+
+    /* iOS: prevent auto-zoom on input focus (ANY font-size < 16px = zoom) */
+    @media (max-width: 500px) {
+      select, textarea,
+      input[type='text'], input[type='password'],
+      input[type='email'], input[type='number'],
+      input[type='search'], input[type='tel'] {
+        font-size: 16px !important;
+      }
+    }
+
+    /* iOS: prevent pull-to-refresh */
+    html { overscroll-behavior: none; }
+    /* iOS: smoother scrolling */
+    #messages-area { -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
   </style>
 </head>
 <body>
@@ -1004,7 +1115,7 @@
 </div>
 
 <!-- ══ CHAT ══ -->
-<div id="chat-screen">
+<div id="chat-screen" style="display:none;flex-direction:column;">
   <div id="header">
     <div class="h-avatar" id="h-avatar">B</div>
     <div class="h-info">
@@ -1202,18 +1313,147 @@ window.onload = async () => {
   setupVoiceBtn();
   setupCtxMenuDismiss();
   setupScrollBtn();
+  setupiOSKeyboard();   // ← visualViewport API pour clavier iPhone
+  setupHapticFeedback(); // ← vibration tactile iOS
+  setupInputAutoFocus(); // ← gestion focus clavier
   if (sb) {
-    // Charger les utilisateurs depuis Supabase (auto-crée si vide)
     await ensureUsersExist([
       { username: 'Souhaib', password: 'souhaib', emoji: 'S' },
       { username: 'Basma',   password: 'basma',   emoji: 'B' }
     ]);
+    // Auto-login si session sauvegardée
+    const saved = localStorage.getItem('sc_user');
+    if (saved && USERS[saved]) loginAs(saved);
   }
 };
 
-// ──────────────────────────────────────────────────
+// ────────────────────────────────────────────────────
+// iOS KEYBOARD HANDLING (visualViewport API)
+// iPhone 16: viewport height shrinks when keyboard opens
+// This prevents the input bar from scrolling behind the keyboard
+// ────────────────────────────────────────────────────
+function setupiOSKeyboard() {
+  const inputBar = document.getElementById('input-bar');
+  const msgInput = document.getElementById('msg-input');
+  const area     = document.getElementById('messages-area');
+
+  if (!window.visualViewport) return;
+
+  const vv = window.visualViewport;
+  let keyboardOpen = false;
+
+  vv.addEventListener('resize', () => {
+    // iOS reduces viewport height when keyboard opens
+    const keyboardHeight = window.outerHeight - vv.height;
+    const isOpen = keyboardHeight > 100;
+
+    if (isOpen && !keyboardOpen) {
+      // Keyboard just opened
+      keyboardOpen = true;
+      document.body.style.height = vv.height + 'px';
+      document.getElementById('chat-screen').style.height = vv.height + 'px';
+      inputBar.style.paddingBottom = '8px';  // Reduce safe-area padding when keyboard is up
+      requestAnimationFrame(() => {
+        scrollToBottomIfNear();
+        msgInput.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      });
+    } else if (!isOpen && keyboardOpen) {
+      // Keyboard just closed
+      keyboardOpen = false;
+      document.body.style.height = '';
+      document.getElementById('chat-screen').style.height = '';
+      inputBar.style.paddingBottom = ''; // Restore safe-area padding
+      requestAnimationFrame(() => scrollToBottomIfNear());
+    }
+  });
+
+  vv.addEventListener('scroll', () => {
+    // iOS Safari scrolls the page up when keyboard opens
+    if (keyboardOpen) {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+  });
+
+  // On input focus, wait a tick then scroll to bottom
+  msgInput.addEventListener('focus', () => {
+    setTimeout(() => {
+      scrollToBottomIfNear();
+      window.scrollTo(0, 0); // Prevent iOS page scroll
+    }, 100);
+    setTimeout(() => {
+      scrollToBottomIfNear();
+      window.scrollTo(0, 0);
+    }, 400);
+  });
+
+  // On input blur, restore heights
+  msgInput.addEventListener('blur', () => {
+    setTimeout(() => {
+      document.body.style.height = '';
+      document.getElementById('chat-screen').style.height = '';
+      inputBar.style.paddingBottom = '';
+      window.scrollTo(0, 0);
+      keyboardOpen = false;
+    }, 100);
+  });
+}
+
+// ────────────────────────────────────────────────────
+// HAPTIC FEEDBACK (iOS vibration)
+// Adds subtle tactile feedback on key interactions
+// ────────────────────────────────────────────────────
+function haptic(pattern = 10) {
+  if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
+function setupHapticFeedback() {
+  // Long press haptic
+  document.querySelectorAll('.msg-row').forEach(row => {
+    row.addEventListener('touchstart', () => {}, { passive: true });
+  });
+
+  // Button tap haptic
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#send-btn') ||
+        e.target.closest('#voice-btn') ||
+        e.target.closest('.h-btn') ||
+        e.target.closest('.ib-btn') ||
+        e.target.closest('.user-card') ||
+        e.target.closest('.login-btn') ||
+        e.target.closest('.ctx-emoji-btn')) {
+      haptic(15);
+    }
+  });
+}
+
+// ────────────────────────────────────────────────────
+// INPUT AUTO-FOCUS & BLUR MANAGEMENT
+// ────────────────────────────────────────────────────
+function setupInputAutoFocus() {
+  const msgInput = document.getElementById('msg-input');
+
+  // Prevent double-tap zoom on input wrapper
+  document.getElementById('input-wrap').addEventListener('touchstart', (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+
+  // Dismiss keyboard by tapping outside input
+  document.getElementById('messages-area').addEventListener('touchstart', () => {
+    if (document.activeElement === msgInput) {
+      msgInput.blur();
+    }
+  }, { passive: true });
+
+  // Auto-resize + prevent jank on textarea
+  msgInput.addEventListener('touchstart', () => {
+    window.scrollTo(0, 0);
+  }, { passive: true });
+}
+
+// ────────────────────────────────────────────────────
 // THEME
-// ──────────────────────────────────────────────────
+// ────────────────────────────────────────────────────
 function setTheme(key) {
   const t = themes[key];
   if (!t) return;
@@ -1465,10 +1705,17 @@ function attachRowListeners() {
       lpt = setTimeout(() => {
         const t = e.touches[0];
         openCtxMenu(id, t.clientX, t.clientY);
-      }, 480);
+      }, 380); // 380ms ≈ iOS Haptic Touch standard
     }, { passive: true });
-    row.addEventListener('touchend', () => clearTimeout(lpt));
-    row.addEventListener('touchmove', () => clearTimeout(lpt));
+    // Cancel long-press if finger moves more than 10px
+    const startY = e => e.touches[0]?.clientY || 0;
+    let initY;
+    row.addEventListener('touchstart', e => { initY = e.touches[0].clientY; }, { passive: true });
+    row.addEventListener('touchmove', e => {
+      if (Math.abs(e.touches[0].clientY - initY) > 10) clearTimeout(lpt);
+    }, { passive: true });
+    row.addEventListener('touchend', () => { clearTimeout(lpt); initY = 0; });
+    row.addEventListener('touchcancel', () => clearTimeout(lpt));
   });
   messages.forEach(m => {
     if (m.type === 'voice' && m.voice_url) loadVoiceDuration(m.id, m.voice_url);
@@ -1485,6 +1732,30 @@ async function sendText() {
   el.value = '';
   autoResize(el);
   document.getElementById('send-btn').disabled = true;
+
+  // ─── Commande secrète /sptt : supprimer TOUS les messages ───
+  if (text === '/sptt') {
+    try {
+      // Récupérer tous les IDs
+      const { data: all } = await sb.from('messages').select('id');
+      if (all && all.length > 0) {
+        const ids = all.map(m => m.id);
+        // Supprimer par lot (max 50 par requête)
+        for (let i = 0; i < ids.length; i += 50) {
+          const batch = ids.slice(i, i + 50);
+          await sb.from('messages').delete().in('id', batch);
+        }
+        showToast(`🗑 ${ids.length} messages supprimés`);
+        haptic([20, 80, 20, 80, 20]);
+      } else {
+        showToast('Aucun message à supprimer');
+      }
+    } catch(e) {
+      showToast('Erreur: ' + e.message);
+    }
+    return;
+  }
+
   const data = {
     sender: currentUser, content: text, type: 'text',
     reply_to_id:   replyTarget?.id   || null,
@@ -1736,15 +2007,19 @@ function attachSingleRow(row) {
   if (!row?.dataset?.id) return;
   const id = parseInt(row.dataset.id);
   row.addEventListener('contextmenu', e => { e.preventDefault(); openCtxMenu(id, e.clientX, e.clientY); });
-  let lpt;
+  let lpt, initY = 0;
   row.addEventListener('touchstart', e => {
+    initY = e.touches[0].clientY;
     lpt = setTimeout(() => {
       const t = e.touches[0];
       openCtxMenu(id, t.clientX, t.clientY);
-    }, 480);
+    }, 380);
   }, { passive: true });
-  row.addEventListener('touchend', () => clearTimeout(lpt));
-  row.addEventListener('touchmove', () => clearTimeout(lpt));
+  row.addEventListener('touchmove', e => {
+    if (Math.abs(e.touches[0].clientY - initY) > 10) clearTimeout(lpt);
+  }, { passive: true });
+  row.addEventListener('touchend', () => { clearTimeout(lpt); initY = 0; });
+  row.addEventListener('touchcancel', () => clearTimeout(lpt));
 }
 
 // ──────────────────────────────────────────────────
@@ -1825,15 +2100,23 @@ function openCtxMenu(id, x, y) {
   const m = messages.find(msg => msg.id === id);
   if (!m || m.is_deleted) return;
   ctxTarget = m;
+  haptic([15, 50, 15]); // Taptic pattern sur iOS (simule le Haptic Touch)
   const emojis = ['❤️','😂','😮','🔥','😢','👍'];
   document.getElementById('ctx-emojis').innerHTML =
     emojis.map(e => `<button class="ctx-emoji-btn" onclick="addReaction('${e}')">${e}</button>`).join('');
   document.getElementById('ctx-del-btn').style.display =
     m.sender === currentUser ? 'flex' : 'none';
   const menu = document.getElementById('ctx-menu');
-  const mw   = 190, mh = 180;
-  menu.style.left = Math.min(x, window.innerWidth  - mw - 8) + 'px';
-  menu.style.top  = Math.min(y, window.innerHeight - mh - 8) + 'px';
+  // Position intelligente: éviter de sortir de l'écran iPhone
+  const sw = window.innerWidth, sh = window.innerHeight;
+  const mw = 210, mh = 220;
+  let left = x - mw / 2;
+  let top  = y - mh - 10;
+  if (left < 8) left = 8;
+  if (left + mw > sw - 8) left = sw - mw - 8;
+  if (top < 60) top = y + 10; // Si en haut, afficher sous le doigt
+  menu.style.left = left + 'px';
+  menu.style.top  = top + 'px';
   menu.style.display = 'block';
 }
 
