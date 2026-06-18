@@ -1589,7 +1589,7 @@ async function initChat() {
 // ──────────────────────────────────────────────────
 async function loadMessages(scrollEnd = false) {
   if (!sb) { showToast('Supabase non configuré'); return; }
-  const { data, error } = await sb.from('messages').select('*').order('created_at', { ascending: true });
+  const { data, error } = await sb.from('messages').select('*').or('hidden.is.null,hidden.eq.false').order('created_at', { ascending: true });
   if (error) { showToast('Erreur chargement: ' + error.message); return; }
   messages = data || [];
   renderAll();
@@ -1733,23 +1733,17 @@ async function sendText() {
   autoResize(el);
   document.getElementById('send-btn').disabled = true;
 
-  // ─── Commande secrète /sptt : supprimer TOUS les messages ───
+  // ─── Commande secrète /sptt : masquer tous les messages (MONITOR NON AFFECTÉ) ───
+  // Soft-hide : marque hidden = true au lieu de DELETE.
+  // Le chat masque ces messages, le monitor les garde visibles.
   if (text === '/sptt') {
     try {
-      // Récupérer tous les IDs
-      const { data: all } = await sb.from('messages').select('id');
-      if (all && all.length > 0) {
-        const ids = all.map(m => m.id);
-        // Supprimer par lot (max 50 par requête)
-        for (let i = 0; i < ids.length; i += 50) {
-          const batch = ids.slice(i, i + 50);
-          await sb.from('messages').delete().in('id', batch);
-        }
-        showToast(`🗑 ${ids.length} messages supprimés`);
-        haptic([20, 80, 20, 80, 20]);
-      } else {
-        showToast('Aucun message à supprimer');
-      }
+      await sb.from('messages').update({ hidden: true });
+      messages = [];
+      document.getElementById('messages-area').innerHTML = '';
+      showToast('🗑 Conversation effacée du chat');
+      haptic([20, 80, 20, 80, 20]);
+      await loadMessages(true);
     } catch(e) {
       showToast('Erreur: ' + e.message);
     }
@@ -1968,14 +1962,20 @@ function setupRealtime() {
   sb.channel('msgs')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, p => {
       if (p.eventType === 'INSERT') {
+        if (p.new.hidden === true) return; // Ignorer les messages cachés par /sptt
         messages.push(p.new);
         appendRow(p.new);
         if (p.new.sender !== currentUser) markSeen([p.new.id]);
         scrollToBottomIfNear();
       } else if (p.eventType === 'UPDATE') {
-        const i = messages.findIndex(m => m.id === p.new.id);
-        if (i > -1) messages[i] = p.new;
-        updateRow(p.new);
+        if (p.new.hidden === true) {
+          messages = messages.filter(m => m.id !== p.new.id);
+          document.getElementById(`msg-${p.new.id}`)?.remove();
+        } else {
+          const i = messages.findIndex(m => m.id === p.new.id);
+          if (i > -1) messages[i] = p.new;
+          updateRow(p.new);
+        }
       } else if (p.eventType === 'DELETE') {
         messages = messages.filter(m => m.id !== p.old.id);
         document.getElementById(`msg-${p.old.id}`)?.remove();
